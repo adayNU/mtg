@@ -20,6 +20,7 @@ function draw() {
 	}
 
 	var div = document.createElement("div");
+	div.classList.add("card");
 
 	var link = document.createElement("a");
 	link.innerHTML = "<img src='" + cardURLs.shift() + "'>";
@@ -69,7 +70,7 @@ function resurectToHand(btn1, btn2, cardID) {
 	var link = document.getElementById(cardID);
 	link.href = "javascript:play('" + link.id + "');"
 	
-	document.getElementById("hand").appendChild(link.parentNod);
+	document.getElementById("hand").appendChild(link.parentNode);
 }
 
 function resurectToPlay(btn1, btn2, cardID) {

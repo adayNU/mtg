@@ -2,3 +2,30 @@
 .tapped {
   transform: rotate(90deg);
 }
+
+.card {
+	max-width: 225px;
+	display: inline-block;
+	padding: 5px;
+}
+
+#inPlay {
+	width: 100%;
+	min-height: 310px;
+	padding: 10px;
+	background-color: #E7DAFE;
+}
+
+#hand {
+	width: 100%;
+	min-height: 310px;
+	padding: 10px;
+	background-color: #DAFEF8;
+}
+
+#graveyard {
+	width: 100%;
+	min-height: 310px;
+	padding: 10px;
+	background-color: #DEDEDF;
+}
