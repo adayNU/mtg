@@ -10,8 +10,17 @@
 	padding: 5px;
 }
 
+.counters {
+
+}
+
+
+.art {
+
+}
+
 .actions {
-	
+
 }
 
 #wrapper {
@@ -19,7 +28,7 @@
 	width: 100%;
 }
 
-#inPlay {
+#play {
 	min-height: 310px;
 	padding: 10px;
 	background-color: #E7DAFE;

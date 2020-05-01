@@ -4,6 +4,138 @@ function buildURL(id) {
 	return "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + id + "&type=card"
 }
 
+const actions = {
+	GRAVEYARD: 0,
+	HAND: 1,
+	PLAY: 2,
+}
+
+const classes = {
+	CARD: '.card',
+	COUNTERS: '.counters',
+	ART: '.art',
+	ACTIONS: '.actions',
+}
+
+var HAND;
+var PLAY;
+var GRAVEYARD;
+
+window.addEventListener('load', function () {
+	HAND = document.getElementById("hand");
+	PLAY = document.getElementById("play");
+	GRAVEYARD = document.getElementById("graveyard");
+})
+
+// draw creates the cononical card object, and adds it to the #hand.
+function draw() {
+	if (cardURLs.length == 0) {
+		alert("deck is empty. you either lost or need to input a deck.");
+		return;
+	}
+
+	var id = cardURLs.shift();
+
+	var card = document.createElement("div");
+	card.classList.add("card");
+	card.setAttribute("data-id", id);
+	card.id = uuid();
+
+	var counters = document.createElement("div");
+	counters.classList.add("counters");
+	card.appendChild(counters);
+
+	var art = document.createElement("div");
+	art.classList.add("art");
+	art.innerHTML = "<img src='" + buildURL(id) + "'>";
+	art.setAttribute("onclick", buildArtAction(card.id, actions.HAND))
+	card.appendChild(art);
+
+	card.appendChild(buildActionButtons(card.id, actions.HAND));
+	
+	appendToLocation(card, HAND);
+}
+
+function appendToLocation(obj, loc) {
+	var set = loc.querySelectorAll("[data-id='" + obj.getAttribute("data-id") + "']");
+	// if this card is already there, put this one next to it to make the board more sane.
+	if (set.length > 0) {
+		set[set.length-1].parentNode.insertBefore(obj, set[set.length-1].nextSibling);
+	} else {
+		loc.appendChild(obj); 
+	}
+}
+
+function buildActionButtons(id, action) {
+	var buttons = document.createElement("div");
+	buttons.classList.add("actions");
+
+	switch (action) {
+		case actions.GRAVEYARD:
+			var btn = document.createElement("button");
+			var btn2 = document.createElement("button");
+
+			btn.innerText = "Move to hand";
+			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.HAND + ", '" + HAND.id + "');");
+			btn2.innerText = "Move to play";
+			btn2.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.PLAY + ", '" + PLAY.id + "');");
+
+			buttons.appendChild(btn);
+			buttons.appendChild(btn2);
+			break;
+		case actions.PLAY:
+			console.log("fuck");
+			var btn = document.createElement("button");
+			var btn2 = document.createElement("button");
+
+			btn.innerText = "Move to hand";
+			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.HAND + ", '" + HAND.id + "');");
+			btn2.innerText = "Move to graveyard";
+			btn2.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.GRAVEYARD + ", '" + GRAVEYARD.id + "');");
+
+			buttons.appendChild(btn);
+			buttons.appendChild(btn2);
+			break;
+		case actions.HAND:
+			console.log("hand");
+			var btn = document.createElement("button");
+			var btn2 = document.createElement("button");
+
+			btn.innerText = "Move to play";
+			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.PLAY + ", '" + PLAY.id + "');");
+			btn2.innerText = "Move to graveyard";
+			btn2.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.GRAVEYARD + ", '" + GRAVEYARD.id + "');");
+
+			buttons.appendChild(btn);
+			buttons.appendChild(btn2);
+			break;
+	}
+
+	var btn = document.createElement("button");
+	btn.innerText = "Exhile";
+	btn.setAttribute("onclick", "javascript:exhile('" + id + "');");
+	buttons.appendChild(btn);
+
+	console.log(buttons);
+
+	return buttons
+}
+
+function buildArtAction(id, action) {
+	switch (action) {
+		case actions.GRAVEYARD:
+			return "javascript:void(0);"
+		case actions.HAND:
+			return "javascript:cardAction('" + id + "', '" + actions.PLAY + "', '" + PLAY.id + "')";
+		case actions.PLAY:
+			return "javascript:tap('" + id + "')";
+	}
+}
+
+function exhile(id) {
+	document.getElementById(id).remove();
+}
+
 // Not sure how legit this is, just stole it off the internet.
 // https://gomakethings.com/how-to-shuffle-an-array-with-vanilla-js/
 function shuffle (array) {
@@ -40,127 +172,35 @@ function createDeck(input) {
 	cardURLs = shuffle(cardURLs)
 }
 
-function draw() {
-	if (cardURLs.length == 0) {
-		alert("deck is empty. you either lost or need to input a deck.");
-		return;
+function cardAction(id, action, targetId) {
+	var card = document.getElementById(id);
+
+	if (tapped(id)) {
+		tap(id)
 	}
 
-	var id = cardURLs.shift()
+	card.querySelector(classes.ART).setAttribute("onclick", buildArtAction(id, action));
+	card.querySelector(classes.ACTIONS).remove(); 
+	card.appendChild(buildActionButtons(id, action));
 
-	var div = document.createElement("div");
-	div.classList.add("card");
-	div.setAttribute("data-id", id);
-
-	var link = document.createElement("a");
-	link.innerHTML = "<img src='" + buildURL(id) + "'>";
-	link.id = uuid()
-	link.href = "javascript:play('" + link.id + "');"
-
-	div.appendChild(link);
-
-	var btn = document.createElement("button");
-	btn.id = uuid();
-	btn.setAttribute("onclick", "javascript:discard('" + link.id + "', '" + btn.id + "');");
-	btn.innerText = "Move to graveyard";
-	div.appendChild(btn);
-
-	var inHand = document.getElementById("hand").querySelectorAll("[data-id='" + div.getAttribute("data-id") + "']");
-	// if this card is already in hand, put this one next to it to make the board more sane.
-	if (inHand.length > 0) {
-		insertAfter(div, inHand[inHand.length-1]);
-	} else {
-		document.getElementById("hand").appendChild(div); 
-	}
-}
-
-function insertAfter(newNode, existingNode) {
-    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
-}
-
-function play(id) {
-	var n = document.getElementById(id);
-	n.href = "javascript:tap('" + n.id + "');"
-
-	var div = n.parentNode;
-
-	var inPlay = document.getElementById("inPlay").querySelectorAll("[data-id='" + div.getAttribute("data-id") + "']");
-	// if this card is already in play, put this one next to it to make the board more sane.
-	if (inPlay.length > 0) {
-		insertAfter(div, inPlay[inPlay.length-1]);
-	} else {
-		document.getElementById("inPlay").appendChild(div); 
-	}
+	document.getElementById(targetId).appendChild(card);
 }
 
 // tap will alter a card between tapped and untapped state.
 function tap(id) {
-	var n = document.getElementById(id).children[0];
+	var card = document.getElementById(id);
 
-	if (n.classList.contains("tapped")) {
-		n.classList.remove("tapped");
+	if (card.classList.contains("tapped")) {
+		card.classList.remove("tapped");
 	} else {
-		n.classList.add("tapped");
+		card.classList.add("tapped");
 	}
 }
 
 function tapped(id) {
-	return document.getElementById(id).children[0].classList.contains("tapped");
+	return document.getElementById(id).classList.contains("tapped");
 }
 
-function resurectToHand(btn1, btn2, cardID) {
-	var n = document.getElementById(cardID);
-	
-	document.getElementById(btn1).remove();
-	
-	var btn = document.getElementById(btn2);
-	btn.id = btn2;
-	btn.setAttribute("onclick", "javascript:discard('" + n.id + "', '" + btn.id + "');");
-	btn.innerText = "Move to graveyard";
-
-	var link = document.getElementById(cardID);
-	link.href = "javascript:play('" + link.id + "');"
-	
-	document.getElementById("hand").appendChild(link.parentNode);
-}
-
-function resurectToPlay(btn1, btn2, cardID) {
-	var n = document.getElementById(cardID);
-
-	document.getElementById(btn1).remove();
-
-	var btn = document.getElementById(btn2);
-	btn.id = btn2;
-	btn.setAttribute("onclick", "javascript:discard('" + n.id + "', '" + btn.id + "');");
-	btn.innerText = "Move to graveyard";
-
-	var link = document.getElementById(cardID);
-	link.href = "javascript:tap('" + n.id + "');"
-
-	document.getElementById("inPlay").appendChild(link.parentNode);
-
-}
-
-// discard ...
-function discard(cardID, buttonId) {
-	var n = document.getElementById(cardID);
-
-	if (tapped(cardID)) {
-		tap(cardID)
-	}
-
-	var btn = document.getElementById(buttonId);
-	var btn2 = document.createElement("button");
-	btn2.id = uuid();
-	btn2.innerText = "Move to play";
-	btn2.setAttribute("onclick", "javascript:resurectToPlay('" + btn.id + "', '" + btn2.id + "', '" + n.id + "');");
-	btn.innerText = "Move to hand";
-	btn.setAttribute("onclick", "javascript:resurectToHand('" + btn.id + "', '" + btn2.id + "', '" + n.id + "');");
-
-	n.parentNode.appendChild(btn2);
-	
-	document.getElementById("graveyard").appendChild(n.parentNode);
-}
 
 // uuid provides a Universally Unique Identifier to use as an ID for each card.
 function uuid() {
