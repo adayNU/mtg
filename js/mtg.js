@@ -105,7 +105,37 @@ function buildActionButtons(id, action) {
 	btn3.setAttribute("onclick", "javascript:exile('" + id + "');");
 	buttons.appendChild(btn3);
 
+	buttons.appendChild(buildDD(id));
+
 	return buttons
+}
+
+function buildDD(id) {
+	var dd = document.createElement("select");
+	dd.setAttribute("onchange", "javascript:returnCardToDeck('" + id + "', " + dd.value + ");");
+	
+	var opt = document.createElement("option")
+	opt.innerHTML = "Place in deck..."
+	opt.value = null;
+
+	var opt2 = document.createElement("option")
+	opt2.innerHTML = "Top of Deck"
+	opt2.value = deck.TOP;
+
+	var opt3 = document.createElement("option")
+	opt3.innerHTML = "Bottom of Deck"
+	opt3.value = deck.Bottom;
+
+	var opt4 = document.createElement("option")
+	opt4.innerHTML = "Random"
+	opt4.value = deck.RANDOM;
+
+	dd.appendChild(opt);
+	dd.appendChild(opt2);
+	dd.appendChild(opt3);
+	dd.appendChild(opt4);
+
+	return dd;
 }
 
 function buildArtAction(id, action) {
@@ -171,6 +201,35 @@ function cardAction(id, action, targetId) {
 	card.appendChild(buildActionButtons(id, action));
 
 	appendToLocation(card, document.getElementById(targetId));
+}
+
+const deck = {
+	TOP: 0,
+	BOTTOM: 1,
+	RANDOM: 2,
+}
+
+function returnCardToDeck(id, loc) {
+	var card = document.getElementById(id)
+	var cardID = card.getAttribute("data-id");
+
+	switch (loc) {
+		case deck.TOP:
+			cardURLs.unshift(cardID);
+			break;
+		case deck.BOTTOM:
+			cardURLs.push(cardID);
+			break;
+		case cardURLs.RANDOM:
+			cardURLs.push(cardID);
+			cardURLs = shuffle(cardURLs);
+			break;
+		default:
+			alert("bug!");
+			return;
+	}
+
+	card.remove();
 }
 
 // tap will alter a card between tapped and untapped state.

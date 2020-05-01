@@ -12,6 +12,7 @@
 
 .card:hover .actions {
 	display: block;
+	position: absolute;
 }
 
 .card .actions {
@@ -28,7 +29,9 @@
 }
 
 .actions {
-
+	margin-top: 5px;
+	padding: 5px;
+	background: rgba(247, 247, 247, 0.7);
 }
 
 #wrapper {
@@ -37,19 +40,19 @@
 }
 
 #play {
-	min-height: 360px;
+	min-height: 311px;
 	padding: 10px;
 	background-color: #E7DAFE;
 }
 
 #hand {
-	min-height: 340px;
+	min-height: 311px;
 	padding: 10px;
 	background-color: #DAFEF8;
 }
 
 #graveyard {
-	min-height: 340px;
+	min-height: 311px;
 	padding: 10px;
 	background-color: #DEDEDF;
 }
