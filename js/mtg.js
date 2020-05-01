@@ -43,7 +43,7 @@ function draw() {
 
 	var art = document.createElement("div");
 	art.classList.add("art");
-	art.innerHTML = "<img src='" + buildURL(id) + "'>";
+	art.innerHTML = "<img width='223' src='" + buildURL(id) + "'>";
 	art.setAttribute("onclick", buildArtAction(card.id, actions.HAND))
 	card.appendChild(art);
 
