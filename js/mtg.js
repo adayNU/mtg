@@ -70,11 +70,12 @@ function buildActionButtons(id, action) {
 	var buttons = document.createElement("div");
 	buttons.classList.add("actions");
 
+	var btn = document.createElement("button");
+	var btn2 = document.createElement("button");
+	var btn3 = document.createElement("button");
+
 	switch (action) {
 		case actions.GRAVEYARD:
-			var btn = document.createElement("button");
-			var btn2 = document.createElement("button");
-
 			btn.innerText = "Move to hand";
 			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.HAND + ", '" + HAND.id + "');");
 			btn2.innerText = "Move to play";
@@ -84,10 +85,6 @@ function buildActionButtons(id, action) {
 			buttons.appendChild(btn2);
 			break;
 		case actions.PLAY:
-			console.log("fuck");
-			var btn = document.createElement("button");
-			var btn2 = document.createElement("button");
-
 			btn.innerText = "Move to hand";
 			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.HAND + ", '" + HAND.id + "');");
 			btn2.innerText = "Move to graveyard";
@@ -97,26 +94,16 @@ function buildActionButtons(id, action) {
 			buttons.appendChild(btn2);
 			break;
 		case actions.HAND:
-			console.log("hand");
-			var btn = document.createElement("button");
-			var btn2 = document.createElement("button");
-
-			btn.innerText = "Move to play";
-			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.PLAY + ", '" + PLAY.id + "');");
-			btn2.innerText = "Move to graveyard";
-			btn2.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.GRAVEYARD + ", '" + GRAVEYARD.id + "');");
+			btn.innerText = "Move to graveyard";
+			btn.setAttribute("onclick", "javascript:cardAction('" + id + "', " + actions.GRAVEYARD + ", '" + GRAVEYARD.id + "');");
 
 			buttons.appendChild(btn);
-			buttons.appendChild(btn2);
 			break;
 	}
 
-	var btn = document.createElement("button");
-	btn.innerText = "Exhile";
-	btn.setAttribute("onclick", "javascript:exhile('" + id + "');");
-	buttons.appendChild(btn);
-
-	console.log(buttons);
+	btn3.innerText = "Exile";
+	btn3.setAttribute("onclick", "javascript:exile('" + id + "');");
+	buttons.appendChild(btn3);
 
 	return buttons
 }
@@ -126,13 +113,13 @@ function buildArtAction(id, action) {
 		case actions.GRAVEYARD:
 			return "javascript:void(0);"
 		case actions.HAND:
-			return "javascript:cardAction('" + id + "', '" + actions.PLAY + "', '" + PLAY.id + "')";
+			return "javascript:cardAction('" + id + "', " + actions.PLAY + ", '" + PLAY.id + "')";
 		case actions.PLAY:
 			return "javascript:tap('" + id + "')";
 	}
 }
 
-function exhile(id) {
+function exile(id) {
 	document.getElementById(id).remove();
 }
 
@@ -183,22 +170,22 @@ function cardAction(id, action, targetId) {
 	card.querySelector(classes.ACTIONS).remove(); 
 	card.appendChild(buildActionButtons(id, action));
 
-	document.getElementById(targetId).appendChild(card);
+	appendToLocation(card, document.getElementById(targetId));
 }
 
 // tap will alter a card between tapped and untapped state.
 function tap(id) {
-	var card = document.getElementById(id);
+	var art = document.getElementById(id).querySelector(classes.ART);
 
-	if (card.classList.contains("tapped")) {
-		card.classList.remove("tapped");
+	if (art.classList.contains("tapped")) {
+		art.classList.remove("tapped");
 	} else {
-		card.classList.add("tapped");
+		art.classList.add("tapped");
 	}
 }
 
 function tapped(id) {
-	return document.getElementById(id).classList.contains("tapped");
+	return document.getElementById(id).querySelector(classes.ART).classList.contains("tapped");
 }
 
 
