@@ -5,13 +5,17 @@
 </head>
 <script src="js/mtg.js"></script>
 <body>
-	<input type="text" id="deck"></input>
+	<div id=wrapper">
+		<div id="actions">
+			<input type="text" id="deck"></input>
+		</div>
+		
+		<button onclick="createDeck(document.getElementById('deck'))")">Generate Deck</button>
+		<button onclick="draw()")">Draw!</button>
 
-	<button onclick="createDeck(document.getElementById('deck'))")">Generate Deck</button>
-	<button onclick="draw()")">Draw!</button>
-
-	<div id="inPlay"></div>
-	<div id="hand"></div>
-	<div id="graveyard"></div>
+		<div id="inPlay"></div>
+		<div id="hand"></div>
+		<div id="graveyard"></div>
+	</div>
 </body>
 </html>

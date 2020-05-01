@@ -1,5 +1,30 @@
 var cardURLs = [];
 
+function buildURL(id) {
+	return "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + id + "&type=card"
+}
+
+// Not sure how legit this is, just stole it off the internet.
+// https://gomakethings.com/how-to-shuffle-an-array-with-vanilla-js/
+function shuffle (array) {
+	var currentIndex = array.length;
+	var temporaryValue, randomIndex;
+
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
+};
+
 function createDeck(input) {
 	var cardIDs = input.value.split(",");
 
@@ -9,8 +34,10 @@ function createDeck(input) {
 	}
 
 	for (i = 0; i < cardIDs.length; i++) { 
-    		cardURLs.push("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + cardIDs[i].trim() + "&type=card");
+    		cardURLs.push(cardIDs[i].trim());
 	}
+
+	cardURLs = shuffle(cardURLs)
 }
 
 function draw() {
@@ -19,33 +46,51 @@ function draw() {
 		return;
 	}
 
+	var id = cardURLs.shift()
+
 	var div = document.createElement("div");
 	div.classList.add("card");
+	div.setAttribute("data-id", id);
 
 	var link = document.createElement("a");
-	link.innerHTML = "<img src='" + cardURLs.shift() + "'>";
+	link.innerHTML = "<img src='" + buildURL(id) + "'>";
 	link.id = uuid()
 	link.href = "javascript:play('" + link.id + "');"
 
-	div.appendChild(link)
+	div.appendChild(link);
 
-	document.getElementById("hand").appendChild(div);
+	var btn = document.createElement("button");
+	btn.id = uuid();
+	btn.setAttribute("onclick", "javascript:discard('" + link.id + "', '" + btn.id + "');");
+	btn.innerText = "Move to graveyard";
+	div.appendChild(btn);
+
+	var inHand = document.getElementById("hand").querySelectorAll("[data-id='" + div.getAttribute("data-id") + "']");
+	// if this card is already in hand, put this one next to it to make the board more sane.
+	if (inHand.length > 0) {
+		insertAfter(div, inHand[inHand.length-1]);
+	} else {
+		document.getElementById("hand").appendChild(div); 
+	}
 }
 
+function insertAfter(newNode, existingNode) {
+    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+}
 
 function play(id) {
 	var n = document.getElementById(id);
 	n.href = "javascript:tap('" + n.id + "');"
 
-	var btn = document.createElement("button");
-	btn.id = uuid();
-	btn.setAttribute("onclick", "javascript:discard('" + n.id + "', '" + btn.id + "');");
-	btn.innerText = "Move to graveyard";
-
 	var div = n.parentNode;
-	div.appendChild(btn);
 
-	document.getElementById("inPlay").appendChild(div); 
+	var inPlay = document.getElementById("inPlay").querySelectorAll("[data-id='" + div.getAttribute("data-id") + "']");
+	// if this card is already in play, put this one next to it to make the board more sane.
+	if (inPlay.length > 0) {
+		insertAfter(div, inPlay[inPlay.length-1]);
+	} else {
+		document.getElementById("inPlay").appendChild(div); 
+	}
 }
 
 // tap will alter a card between tapped and untapped state.
@@ -64,8 +109,14 @@ function tapped(id) {
 }
 
 function resurectToHand(btn1, btn2, cardID) {
+	var n = document.getElementById(cardID);
+	
 	document.getElementById(btn1).remove();
-	document.getElementById(btn2).remove();
+	
+	var btn = document.getElementById(btn2);
+	btn.id = btn2;
+	btn.setAttribute("onclick", "javascript:discard('" + n.id + "', '" + btn.id + "');");
+	btn.innerText = "Move to graveyard";
 
 	var link = document.getElementById(cardID);
 	link.href = "javascript:play('" + link.id + "');"

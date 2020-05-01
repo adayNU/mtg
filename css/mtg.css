@@ -1,30 +1,37 @@
 
 .tapped {
-  transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 
 .card {
+	position: relative;
 	max-width: 225px;
 	display: inline-block;
 	padding: 5px;
 }
 
-#inPlay {
+.actions {
+	
+}
+
+#wrapper {
+	margin: 10px;
 	width: 100%;
+}
+
+#inPlay {
 	min-height: 310px;
 	padding: 10px;
 	background-color: #E7DAFE;
 }
 
 #hand {
-	width: 100%;
 	min-height: 310px;
 	padding: 10px;
 	background-color: #DAFEF8;
 }
 
 #graveyard {
-	width: 100%;
 	min-height: 310px;
 	padding: 10px;
 	background-color: #DEDEDF;
