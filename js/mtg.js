@@ -41,15 +41,15 @@ function draw() {
 	card.setAttribute("data-id", id);
 	card.id = uuid();
 
-	var counters = document.createElement("div");
-	counters.classList.add("counters");
-	card.appendChild(counters);
-
 	var art = document.createElement("div");
 	art.classList.add("art");
 	art.innerHTML = "<img src='" + buildURL(id) + "'>";
 	art.setAttribute("onclick", buildArtAction(card.id, actions.HAND))
 	card.appendChild(art);
+
+	var counters = document.createElement("div");
+	counters.classList.add("counters");
+	card.appendChild(counters);
 
 	card.appendChild(buildActionButtons(card.id, actions.HAND));
 	
@@ -105,12 +105,12 @@ function buildActionButtons(id, action) {
 	btn3.setAttribute("onclick", "javascript:exile('" + id + "');");
 	buttons.appendChild(btn3);
 
-	buttons.appendChild(buildDD(id));
+	buttons.appendChild(buildDropdown(id));
 
 	return buttons
 }
 
-function buildDD(id) {
+function buildDropdown(id) {
 	var dd = document.createElement("select");
 	dd.setAttribute("onchange", "javascript:returnCardToDeck('" + id + "', " + dd.value + ");");
 	
@@ -146,6 +146,48 @@ function buildArtAction(id, action) {
 			return "javascript:cardAction('" + id + "', " + actions.PLAY + ", '" + PLAY.id + "')";
 		case actions.PLAY:
 			return "javascript:tap('" + id + "')";
+	}
+}
+
+function buildCounter(id, action) {
+	switch (action) {
+		case actions.GRAVEYARD:
+		case actions.HAND:
+			document.getElementById(id).querySelector(classes.COUNTERS).innerHTML = "";
+			break;
+		case actions.PLAY:
+			var div = document.createElement("div");
+
+			var btn = document.createElement("button");
+			var btn2 = document.createElement("button");
+
+			btn.innerText = "+";
+			btn.setAttribute("onclick", "javascript:addCounter('" + id + "');");
+			btn2.innerText = "-";
+			btn2.setAttribute("onclick", "javascript:removeCounter('" + id + "');");
+
+			div.appendChild(btn);
+			div.appendChild(btn2);
+
+			document.getElementById(id).querySelector(classes.COUNTERS).appendChild(div);
+			break;
+	}
+}
+
+function addCounter(id) {
+	var counter = document.createElement("img");
+	counter.src = "img/counter.jpg";
+	counter.classList.add("counter");
+
+	document.getElementById(id).querySelector(classes.COUNTERS).appendChild(counter);
+}
+
+function removeCounter(id) {
+	var div = document.getElementById(id).querySelector(classes.COUNTERS);
+	var ctrs = div.querySelectorAll(".counter");
+
+	if (ctrs.length > 0) {
+		ctrs[ctrs.length - 1].remove();
 	}
 }
 
@@ -199,6 +241,7 @@ function cardAction(id, action, targetId) {
 	card.querySelector(classes.ART).setAttribute("onclick", buildArtAction(id, action));
 	card.querySelector(classes.ACTIONS).remove(); 
 	card.appendChild(buildActionButtons(id, action));
+	buildCounter(id, action);
 
 	appendToLocation(card, document.getElementById(targetId));
 }

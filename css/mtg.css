@@ -23,15 +23,28 @@
 
 }
 
+.counter {
+
+}
 
 .art {
 
+}
+
+.label {
+	position: absolute;
+	top: 0;
+	left: 20;
+	bottom: 0;
+	right: 0;
+	overflow: hidden;
 }
 
 .actions {
 	margin-top: 5px;
 	padding: 5px;
 	background: rgba(247, 247, 247, 0.7);
+	z-index: 1000;
 }
 
 #wrapper {
@@ -43,16 +56,19 @@
 	min-height: 311px;
 	padding: 10px;
 	background-color: #E7DAFE;
+	position: relative;
 }
 
 #hand {
 	min-height: 311px;
 	padding: 10px;
 	background-color: #DAFEF8;
+	position: relative;
 }
 
 #graveyard {
-	min-height: 311px;
+	min-height: 400px;
 	padding: 10px;
 	background-color: #DEDEDF;
+	position: relative;
 }
