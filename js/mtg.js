@@ -188,6 +188,11 @@ function tapped(id) {
 	return document.getElementById(id).querySelector(classes.ART).classList.contains("tapped");
 }
 
+function untapAll() {
+	document.querySelectorAll('.tapped').forEach(val => {
+		val.classList.remove("tapped");
+	});
+}
 
 // uuid provides a Universally Unique Identifier to use as an ID for each card.
 function uuid() {

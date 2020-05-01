@@ -10,6 +10,14 @@
 	padding: 5px;
 }
 
+.card:hover .actions {
+	display: block;
+}
+
+.card .actions {
+	display: none;
+}
+
 .counters {
 
 }
@@ -29,19 +37,19 @@
 }
 
 #play {
-	min-height: 310px;
+	min-height: 360px;
 	padding: 10px;
 	background-color: #E7DAFE;
 }
 
 #hand {
-	min-height: 310px;
+	min-height: 340px;
 	padding: 10px;
 	background-color: #DAFEF8;
 }
 
 #graveyard {
-	min-height: 310px;
+	min-height: 340px;
 	padding: 10px;
 	background-color: #DEDEDF;
 }

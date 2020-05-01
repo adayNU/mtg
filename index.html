@@ -8,10 +8,10 @@
 	<div id=wrapper">
 		<div id="actions">
 			<input type="text" id="deck"></input>
+			<button onclick="createDeck(document.getElementById('deck'))")">Generate Deck</button>
+			<button onclick="draw()")">Draw!</button>
+			<button onclick="untapAll()")">Untap Phase</button>
 		</div>
-
-		<button onclick="createDeck(document.getElementById('deck'))")">Generate Deck</button>
-		<button onclick="draw()")">Draw!</button>
 
 		<div id="play"></div>
 		<div id="hand"></div>
